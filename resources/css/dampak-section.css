@@ -1,0 +1,129 @@
+/* DampakSection styles (moved from component)
+   File: resources/css/dampak-section.css
+*/
+
+.dampak-section .dampak-heading {
+    max-width: 64rem;
+    margin: 0 auto 1.25rem;
+    text-align: center;
+}
+
+.dampak-section .dampak-title {
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    margin: 0;
+    color: var(--color-p-5, #921802);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.dampak-section .dampak-sub {
+    margin-top: 0.6rem;
+    color: rgba(107, 34, 12, 0.78);
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.05rem;
+    line-height: 1.75rem;
+}
+
+.dampak-section .dampak-loop {
+    overflow: hidden;
+    padding: 0.5rem 0.3rem 1.25rem;
+}
+
+.dampak-section .dampak-loop__track {
+    --loop-gap: 1.5rem;
+    display: flex;
+    gap: var(--loop-gap);
+    animation: dampakLoopLeft 34s linear infinite;
+    will-change: transform;
+}
+
+.dampak-section .dampak-loop:hover .dampak-loop__track,
+.dampak-section .dampak-loop:focus-within .dampak-loop__track {
+    animation-play-state: paused;
+}
+
+.dampak-section .dampak-loop__set {
+    min-width: 100%;
+    flex: 0 0 100%;
+}
+
+.dampak-section .dampak-card {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.45s ease,
+        border-color 0.35s ease,
+        background 0.35s ease;
+}
+
+.dampak-section .dampak-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 45%,
+        transparent 60%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dampak-section .dampak-card:hover {
+    border-color: rgba(238, 91, 22, 0.26);
+    background: linear-gradient(180deg, #ffffff, #fff7f2);
+}
+
+.dampak-section .dampak-card:hover::after {
+    transform: translateX(120%);
+}
+
+@keyframes dampakLoopLeft {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-50% - (var(--loop-gap) / 2)));
+    }
+}
+
+@media (max-width: 1023px) {
+    .dampak-section .dampak-loop__track {
+        display: block;
+        animation: none;
+    }
+
+    .dampak-section .dampak-loop__set--clone {
+        display: none;
+    }
+
+    .dampak-section .dampak-heading {
+        text-align: left;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dampak-section .dampak-loop__track {
+        animation: none;
+    }
+
+    .dampak-section .dampak-loop__set--clone {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .dampak-section .dampak-title {
+        font-size: 1.25rem;
+    }
+
+    .dampak-section .dampak-sub {
+        font-size: 0.95rem;
+        line-height: 1.6rem;
+    }
+}

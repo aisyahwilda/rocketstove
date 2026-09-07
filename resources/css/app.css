@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import "./rocket-stove-section.css";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.vue';
+
+@theme {
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+
+    --color-p-1: #b22102;
+    --color-p-2: #d73303;
+    --color-p-3: #ee5b16;
+    --color-p-4: #c94b07;
+    --color-p-5: #921802;
+    --color-p-6: #a43017;
+    --color-p-7: #6c1712;
+    --color-p-8: #db6e15;
+    --color-p-9: #f1b11c;
+    --color-p-10: #898321;
+}
+
+:root {
+    --hero-gradient-start: var(--color-p-3);
+    --hero-gradient-end: var(--color-p-8);
+    --accent: var(--color-p-2);
+    /* Soft tints (low-opacity) for large-area backgrounds and glows */
+    --color-p-1-soft: rgba(178, 34, 2, 0.06);
+    --color-p-2-soft: rgba(215, 51, 3, 0.06);
+    --color-p-3-soft: rgba(238, 91, 22, 0.06);
+    --color-p-4-soft: rgba(201, 75, 7, 0.06);
+    --color-p-5-soft: rgba(146, 24, 2, 0.06);
+    --color-p-6-soft: rgba(164, 48, 23, 0.06);
+    --color-p-7-deep: var(--color-p-7);
+    --color-p-9-soft: rgba(241, 177, 28, 0.06);
+    --card-bg: #fffaf6;
+    --text-muted: #6b4a3f;
+}
+
+.hero-bg-gradient {
+    background: linear-gradient(
+        120deg,
+        var(--hero-gradient-start) 0%,
+        rgba(178, 34, 2, 0.9) 30%,
+        rgba(219, 110, 21, 0.9) 100%
+    );
+}
