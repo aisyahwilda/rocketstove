@@ -403,7 +403,7 @@ const vAnimateOnScroll = {
 .cp-visual-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 4;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -774,7 +774,7 @@ const vAnimateOnScroll = {
   
   .cp-mob-img-wrap {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
     border-radius: 16px;
     background: #ffffff;
     overflow: hidden;
