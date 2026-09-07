@@ -57,46 +57,16 @@
             </div>
 
             <div
-                class="w-full lg:w-[45%] relative h-[350px] md:h-[450px] lg:h-[550px] flex justify-center items-end mt-16 lg:mt-0"
+                class="w-full lg:w-[45%] relative h-[350px] md:h-[450px] lg:h-[550px] flex justify-center items-center mt-16 lg:mt-0"
             >
                 <div
-                    class="absolute w-[85%] lg:w-[90%] aspect-square bg-gradient-to-tr from-p-8 to-p-9 rounded-full z-0 bottom-4 lg:bottom-12 right-0 lg:-right-4 shadow-2xl"
+                    class="absolute w-[95%] aspect-square bg-gradient-to-tr from-p-8 to-p-9 rounded-full z-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl"
                 ></div>
-
-                <svg
-                    class="absolute top-1/3 left-4 lg:left-12 w-24 h-24 z-10 text-p-9 opacity-60"
-                    viewBox="0 0 100 100"
-                    fill="none"
-                >
-                    <path
-                        d="M10 90 Q 30 100, 90 20"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-dasharray="6 6"
-                        fill="none"
-                    />
-                </svg>
-
-                <div
-                    class="absolute top-1/4 left-0 lg:left-8 z-20 bg-p-9 text-[#6C1712] rounded-full p-4 lg:p-5 w-20 h-20 lg:w-24 lg:h-24 flex items-center justify-center shadow-xl border-[6px] border-[#F1B11C]/40 transform -rotate-12"
-                >
-                    <svg
-                        class="w-10 h-10"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M11.3 1.046A12.014 12.014 0 0010.337 1a10.433 10.433 0 00-1.042.046c-2.428.261-4.757 1.48-6.19 3.518-1.53 2.176-1.895 4.887-1.127 7.306A11.954 11.954 0 003 12.06c.712.19 1.439.314 2.181.365a10.024 10.024 0 002.042-3.834C7.79 7.425 8.878 6.5 10 6.5c1.122 0 2.21.925 2.777 2.091a10.024 10.024 0 002.042 3.834c.742-.051 1.469-.175 2.181-.365A11.954 11.954 0 0018.029 11.87c.768-2.419.403-5.13-1.127-7.306-1.433-2.038-3.762-3.257-6.19-3.518z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                </div>
 
                 <img
                     src="/images/rocket-stove.png"
                     alt="Rocket Stove"
-                    class="relative z-30 h-[110%] lg:h-[115%] object-contain object-bottom drop-shadow-2xl"
+                    class="relative z-30 h-[95%] lg:h-[105%] object-contain drop-shadow-2xl"
                 />
             </div>
         </div>

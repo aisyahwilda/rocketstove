@@ -6,6 +6,7 @@
     <meta name="description" content="Mengenal Rocket Stove EcoBurner – teknologi pembakaran tepat guna yang efisien dan ramah lingkungan untuk masyarakat Balikpapan.">
 
     <title>Rocket Stove – EcoBurner</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

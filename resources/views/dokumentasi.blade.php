@@ -6,6 +6,7 @@
     <meta name="description" content="Dokumentasi & Galeri Kegiatan EcoBurner Rocket Stove">
 
     <title>Dokumentasi Kegiatan – EcoBurner</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">

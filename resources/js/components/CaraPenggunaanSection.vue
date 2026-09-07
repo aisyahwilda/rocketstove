@@ -1,20 +1,15 @@
 <template>
-  <section class="cp-section" id="cara-penggunaan">
+  <section class="cp-section" ref="sectionRef" id="cara-penggunaan">
     
     <!-- ══ BACKGROUND DECORATIONS ══ -->
     <div class="cp-bg-pattern" aria-hidden="true"></div>
     <div class="cp-bg-glow cp-bg-glow--1" aria-hidden="true"></div>
     <div class="cp-bg-glow cp-bg-glow--2" aria-hidden="true"></div>
-    <div class="cp-bg-glow cp-bg-glow--3" aria-hidden="true"></div>
 
     <div class="cp-container">
       
       <!-- ══ HEADER ══ -->
-      <header class="cp-header" v-animate-on-scroll>
-        <div class="cp-badge">
-          <span class="cp-badge-dot"></span>
-          Panduan Praktis
-        </div>
+      <header class="cp-header" :class="{ 'cp--in': visible }">
         <h2 class="cp-heading">
           Cara <span class="cp-heading-highlight">Penggunaan</span>
         </h2>
@@ -23,965 +18,516 @@
         </p>
       </header>
 
-      <!-- ══ LAYOUT ══ -->
-      <div class="cp-layout">
-        
-        <!-- Left: Sticky Visualizer (Images/Animations) -->
-        <div class="cp-visual-col">
-          <div class="cp-sticky-box">
-            <div class="cp-visual-frame">
-              <!-- Decorative elements around the frame -->
-              <div class="cp-frame-ring cp-frame-ring--1"></div>
-              <div class="cp-frame-ring cp-frame-ring--2"></div>
-              
-              <div class="cp-image-wrapper">
-                <Transition name="fade-img" mode="out-in">
-                  <div :key="activeStep" class="cp-image-inner" @click="openLightbox(activeStep)" style="cursor: pointer;">
-                    
-                    <!-- Fallback Visual -->
-                    <div class="cp-img-fallback" v-show="imageError">
-                      <div class="cp-fallback-circle">
-                         <span class="cp-fallback-num">{{ activeStep + 1 }}</span>
-                      </div>
-                      <div class="cp-fallback-glow"></div>
-                    </div>
-
-                    <!-- Actual Image -->
-                    <img 
-                      :src="`/images/${activeStep + 1}.jpg`" 
-                      :alt="steps[activeStep].title"
-                      class="cp-img"
-                      @error="imageError = true"
-                      @load="imageError = false"
-                      v-show="!imageError"
-                    />
-                    
-                    <!-- Gradient overlay to blend image nicely -->
-                    <div class="cp-img-overlay"></div>
-                  </div>
-                </Transition>
-                
-                <!-- Floating Info Card inside Visualizer -->
-                <div class="cp-floating-info" :key="'info-'+activeStep">
-                  <div class="cp-floating-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <div class="cp-floating-text">
-                    <span class="cp-ft-label">Langkah {{ activeStep + 1 }}</span>
-                    <strong class="cp-ft-title">{{ steps[activeStep].shortTitle }}</strong>
-                  </div>
-                </div>
-
-              </div>
+      <!-- ══ CARD GRID ══ -->
+      <div class="cp-row" :class="{ 'cp--row-in': visible }">
+        <div
+          v-for="(step, i) in steps"
+          :key="i"
+          class="cp-card"
+          :style="{ '--ci': i }"
+          @click="openLightbox(i)"
+          role="button"
+          tabindex="0"
+          :aria-label="`Lihat Langkah ${i + 1}: ${step.title}`"
+          @keydown.enter="openLightbox(i)"
+          @keydown.space.prevent="openLightbox(i)"
+        >
+          <!-- photo -->
+          <div class="cp-photo">
+            <img
+              :src="`/images/${i + 1}.jpg`"
+              :alt="step.title"
+              class="cp-photo-img"
+              loading="lazy"
+            />
+            <!-- hover zoom icon -->
+            <div class="cp-photo-hover" aria-hidden="true">
+              <svg class="cp-zoom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <line x1="11" y1="8" x2="11" y2="14"/>
+                <line x1="8" y1="11" x2="14" y2="11"/>
+              </svg>
             </div>
           </div>
-        </div>
 
-        <!-- Right: Scrollable Steps List -->
-        <div class="cp-steps-col" ref="stepsCol">
-          <div 
-            v-for="(step, index) in steps" 
-            :key="index"
-            class="cp-step-card"
-            :class="{ 'cp-step-card--active': activeStep === index }"
-            :data-index="index"
-            @click="scrollToStep(index)"
-          >
-            <!-- Timeline Line joining the markers -->
-            <div class="cp-timeline-line" v-if="index !== steps.length - 1"></div>
-            
-            <!-- Step Marker (The Circle) -->
-            <div class="cp-step-marker">
-              <div class="cp-step-dot"></div>
-              <div class="cp-step-pulse"></div>
-              <span class="cp-step-num">{{ index + 1 }}</span>
+          <!-- content below photo -->
+          <div class="cp-caption">
+            <div class="cp-caption-header">
+              <span class="cp-caption-num">LANGKAH {{ i + 1 }}</span>
+              <span class="cp-caption-click">Klik untuk perbesar</span>
             </div>
-
-            <!-- Content Box -->
-            <div class="cp-step-content-box">
-              <h3 class="cp-step-title">{{ step.title }}</h3>
-              <p class="cp-step-desc">{{ step.desc }}</p>
-              
-              <!-- Mobile Inline Image -->
-              <div class="cp-mob-image" v-if="activeStep === index">
-                <div class="cp-mob-img-wrap" @click="openLightbox(index)" style="cursor: pointer;">
-                  <div class="cp-mob-fallback" v-if="mobileImgError[index]">
-                     <span class="cp-mob-fallback-num">{{ index + 1 }}</span>
-                  </div>
-                  <img 
-                    :src="`/images/${index + 1}.jpg`" 
-                    :alt="step.title"
-                    class="cp-m-img"
-                    @error="mobileImgError[index] = true"
-                    v-show="!mobileImgError[index]"
-                  />
-                </div>
-              </div>
-            </div>
-
+            <h3 class="cp-caption-title">{{ step.title }}</h3>
+            <p class="cp-caption-desc">{{ step.desc }}</p>
           </div>
         </div>
-
       </div>
+
     </div>
 
-    <!-- ══ LIGHTBOX OVERLAY ══ -->
-    <Transition name="fade">
-      <div v-if="isLightboxOpen" class="cp-lightbox" @click="closeLightbox">
-        <div class="cp-lightbox-content" @click.stop>
-          <button class="cp-lightbox-close" @click="closeLightbox" aria-label="Tutup">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    <!-- ══ LIGHTBOX ══ -->
+    <Teleport to="body">
+      <Transition name="lb">
+        <div
+          v-if="lbOpen"
+          class="cp-lb"
+          @click.self="closeLb"
+          role="dialog"
+          aria-modal="true"
+        >
+          <!-- close -->
+          <button class="cp-lb-close" @click="closeLb" aria-label="Tutup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
           </button>
-          <img :src="`/images/${lightboxStep + 1}.jpg`" :alt="steps[lightboxStep].title" class="cp-lightbox-img" />
-          <div class="cp-lightbox-desc">
-            <h4>Langkah {{ lightboxStep + 1 }}: {{ steps[lightboxStep].title }}</h4>
-            <p>{{ steps[lightboxStep].desc }}</p>
+
+          <!-- counter -->
+          <div class="cp-lb-counter">
+            <span class="cp-lb-count-cur">{{ String(lbIdx + 1).padStart(2, '0') }}</span>
+            <span class="cp-lb-count-sep">/</span>
+            <span class="cp-lb-count-tot">{{ String(steps.length).padStart(2, '0') }}</span>
+          </div>
+
+          <!-- stage -->
+          <div class="cp-lb-stage">
+            <button class="cp-lb-nav cp-lb-nav--l" @click.stop="lbPrev" aria-label="Sebelumnya">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+
+            <Transition name="lb-img" mode="out-in">
+              <figure :key="lbIdx" class="cp-lb-fig">
+                <img
+                  :src="`/images/${lbIdx + 1}.jpg`"
+                  :alt="steps[lbIdx].title"
+                  class="cp-lb-img"
+                />
+                <figcaption class="cp-lb-cap">
+                  <strong>Langkah {{ lbIdx + 1 }}: {{ steps[lbIdx].title }}</strong>
+                  <p>{{ steps[lbIdx].desc }}</p>
+                </figcaption>
+              </figure>
+            </Transition>
+
+            <button class="cp-lb-nav cp-lb-nav--r" @click.stop="lbNext" aria-label="Berikutnya">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </Teleport>
+
   </section>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 
-const activeStep = ref(0);
-const imageError = ref(false);
-const mobileImgError = ref({});
+/* ── Section visibility ── */
+const sectionRef = ref(null);
+const visible    = ref(false);
+let   observer;
 
-const isLightboxOpen = ref(false);
-const lightboxStep = ref(0);
-
-function openLightbox(index) {
-  lightboxStep.value = index;
-  isLightboxOpen.value = true;
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-  isLightboxOpen.value = false;
-  document.body.style.overflow = '';
-}
+/* ── Lightbox state ── */
+const lbOpen = ref(false);
+const lbIdx  = ref(0);
 
 const steps = [
   {
-    shortTitle: 'Persiapan',
     title: 'Siapkan Alat & Bahan',
-    desc: 'Siapkan unit Rocket Stove di tempat yang datar dan aman. Kumpulkan sampah kering seperti ranting, daun kering, atau kertas sebagai bahan bakar utama.'
+    desc: 'Siapkan unit Rocket Stove di tempat yang aman. Kumpulkan ranting, daun kering, atau kertas sebagai bahan bakar utama.'
   },
   {
-    shortTitle: 'Isi Bahan Bakar',
-    title: 'Masukkan Bahan Bakar Awal',
-    desc: 'Masukkan sedikit bahan bakar kering ke dalam ruang pembakaran. Jangan terlalu padat agar udara tetap bisa bersirkulasi dengan baik ke dalam sistem.'
+    title: 'Masukkan Bahan Bakar',
+    desc: 'Masukkan sedikit bahan bakar kering ke dalam ruang pembakaran. Jangan terlalu padat agar udara tetap bisa bersirkulasi.'
   },
   {
-    shortTitle: 'Penyalaan',
     title: 'Nyalakan Api',
-    desc: 'Nyalakan api dari bagian bawah atau pintu masuk bahan bakar. Biarkan api menyala perlahan, mengonsumsi oksigen, dan mulai membesar.'
+    desc: 'Nyalakan api dari bagian bawah atau pintu masuk bahan bakar. Biarkan api menyala perlahan dan mulai membesar.'
   },
   {
-    shortTitle: 'Maintenance',
-    title: 'Tambahkan Sampah Bertahap',
-    desc: 'Setelah api stabil dan suhu naik, tambahkan sampah kering secara perlahan dan bertahap. Hindari memasukkan terlalu banyak sekaligus agar api tidak mati.'
+    title: 'Tambahkan Sampah',
+    desc: 'Setelah api stabil, tambahkan sampah kering secara bertahap. Hindari memasukkan terlalu banyak sekaligus agar api tidak mati.'
   },
   {
-    shortTitle: 'Sirkulasi',
     title: 'Jaga Saluran Udara',
-    desc: 'Pastikan saluran udara (air intake) tetap terbuka dan tidak tertutup abu. Aliran oksigen yang lancar sangat krusial untuk menjaga efisiensi pembakaran.'
+    desc: 'Pastikan saluran udara (air intake) tetap terbuka dan tidak tertutup abu agar sirkulasi oksigen tetap lancar.'
   },
   {
-    shortTitle: 'Penyelesaian',
     title: 'Tunggu Hingga Selesai',
-    desc: 'Tunggu hingga proses pembakaran selesai sepenuhnya. Setelah api padam secara alami, biarkan abu mendingin sebelum dibersihkan atau dimanfaatkan.'
+    desc: 'Tunggu proses pembakaran selesai sepenuhnya. Setelah api padam, biarkan abu mendingin sebelum dibersihkan.'
   }
 ];
 
-let observer;
+function openLightbox(i) {
+    lbIdx.value  = i;
+    lbOpen.value = true;
+    document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+    lbOpen.value = false;
+    document.body.style.overflow = '';
+}
+function lbNext() { lbIdx.value = (lbIdx.value + 1) % steps.length; }
+function lbPrev() { lbIdx.value = (lbIdx.value - 1 + steps.length) % steps.length; }
+
+function onKey(e) {
+    if (!lbOpen.value) return;
+    if (e.key === 'Escape')     closeLb();
+    if (e.key === 'ArrowRight') lbNext();
+    if (e.key === 'ArrowLeft')  lbPrev();
+}
 
 onMounted(() => {
-  const options = {
-    root: null,
-    rootMargin: '-45% 0px -45% 0px', 
-    threshold: 0
-  };
-
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const index = parseInt(entry.target.getAttribute('data-index'));
-        if (!isNaN(index)) {
-          activeStep.value = index;
-          imageError.value = false;
-        }
-      }
-    });
-  }, options);
-
-  const stepCards = document.querySelectorAll('.cp-step-card');
-  stepCards.forEach(card => observer.observe(card));
+    const node = sectionRef.value;
+    if (!node) return;
+    observer = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) { visible.value = true; observer.disconnect(); } },
+        { threshold: 0.1 }
+    );
+    observer.observe(node);
+    window.addEventListener('keydown', onKey);
 });
 
 onUnmounted(() => {
-  if (observer) observer.disconnect();
+    observer?.disconnect();
+    window.removeEventListener('keydown', onKey);
+    document.body.style.overflow = '';
 });
-
-// Allow clicking a step to scroll to it smoothly
-function scrollToStep(index) {
-  const stepCards = document.querySelectorAll('.cp-step-card');
-  if(stepCards[index]) {
-    const y = stepCards[index].getBoundingClientRect().top + window.pageYOffset - 250;
-    window.scrollTo({ top: y, behavior: 'smooth' });
-  }
-}
-
-const vAnimateOnScroll = {
-  mounted: (el) => {
-    el.classList.add('cp-pre-animate');
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        el.classList.add('cp-animate-in');
-        obs.disconnect();
-      }
-    }, { threshold: 0.1 });
-    obs.observe(el);
-  }
-};
 </script>
 
 <style scoped>
-/* ══════════════════════════════════════════════
-   SECTION BASE (Vibrant Light Theme)
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════
+   SECTION
+══════════════════════════════════════ */
 .cp-section {
-  font-family: 'Inter', sans-serif;
-  background-color: #faf7f2;
-  color: #1a0800;
-  padding: 7rem 0 4rem;
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid rgba(238,91,22,0.1);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    padding: 7rem 0 6rem;
+    background: #ffffff;
+    overflow: hidden;
+    border-top: 1px solid rgba(238,91,22,0.1);
 }
 
-/* ══════════════════════════════════════════════
-   BACKGROUND DECORATIONS
-══════════════════════════════════════════════ */
-/* Grid Pattern */
 .cp-bg-pattern {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: radial-gradient(rgba(201, 75, 7, 0.08) 1.5px, transparent 1.5px);
-  background-size: 32px 32px;
-  opacity: 0.6;
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(rgba(201,75,7,0.08) 1.5px, transparent 1.5px);
+    background-size: 32px 32px; opacity: 0.6;
 }
 
-/* Animated Glow Orbs */
 .cp-bg-glow {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(100px);
-  z-index: 0;
-  mix-blend-mode: multiply;
-  opacity: 0.15;
-  animation: floatGlow 15s ease-in-out infinite alternate;
+    position: absolute; border-radius: 9999px;
+    pointer-events: none; z-index: 0; filter: blur(100px);
 }
 .cp-bg-glow--1 {
-  background: #EE5B16;
-  width: 600px;
-  height: 600px;
-  top: -150px;
-  left: -200px;
-  animation-delay: 0s;
+    width: 500px; height: 500px;
+    top: -150px; left: -180px;
+    background: rgba(238,91,22,0.08);
 }
 .cp-bg-glow--2 {
-  background: #F1B11C;
-  width: 450px;
-  height: 450px;
-  bottom: -100px;
-  right: -100px;
-  animation-delay: -5s;
-}
-.cp-bg-glow--3 {
-  background: #D73303;
-  width: 350px;
-  height: 350px;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation-delay: -10s;
-  opacity: 0.08;
+    width: 420px; height: 420px;
+    bottom: -120px; right: -140px;
+    background: rgba(241,177,28,0.08);
 }
 
-@keyframes floatGlow {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(50px, 50px) scale(1.1); }
-}
-
-/* ══════════════════════════════════════════════
-   CONTAINER
-══════════════════════════════════════════════ */
 .cp-container {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  position: relative;
-  z-index: 10;
+    position: relative; z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════
    HEADER
-══════════════════════════════════════════════ */
+══════════════════════════════════════ */
 .cp-header {
-  text-align: center;
-  margin-bottom: 4.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    text-align: center;
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+.cp--in { opacity: 1 !important; transform: none !important; }
 
 .cp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.4rem 1.2rem;
-  background: #fff;
-  border: 1px solid rgba(238, 91, 22, 0.2);
-  color: #C94B07;
-  border-radius: 99px;
-  font-size: 0.8rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 1.2rem;
-  box-shadow: 0 4px 15px rgba(238, 91, 22, 0.08);
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.4rem 1.2rem;
+    background: #fff; border: 1px solid rgba(238, 91, 22, 0.2);
+    color: #C94B07; border-radius: 99px;
+    font-size: 0.8rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 4px 15px rgba(238, 91, 22, 0.08);
 }
 .cp-badge-dot {
-  width: 6px;
-  height: 6px;
-  background: #F1B11C;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #F1B11C;
-  animation: pulseDot 2s infinite;
+    width: 6px; height: 6px;
+    background: #F1B11C; border-radius: 50%;
+    box-shadow: 0 0 8px #F1B11C;
+    animation: pulseDot 2s infinite;
 }
 @keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.5); }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.5); }
 }
 
 .cp-heading {
-  font-size: clamp(2.4rem, 5vw, 3.8rem);
-  font-weight: 900;
-  line-height: 1.1;
-  color: #1a0800;
-  margin-bottom: 1.2rem;
-  letter-spacing: -0.03em;
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    font-weight: 900; line-height: 1.1;
+    letter-spacing: -0.03em; color: #1a0800;
+    margin: 0 0 1.2rem;
 }
-
 .cp-heading-highlight {
-  background: linear-gradient(135deg, #B22102, #EE5B16, #F1B11C);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  position: relative;
-  display: inline-block;
+    background: linear-gradient(135deg, #B22102, #EE5B16, #F1B11C);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .cp-subtitle {
-  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
-  color: #6b4a3a;
-  max-width: 650px;
-  line-height: 1.85;
+    font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+    line-height: 1.8; color: #6b4a3a;
+    max-width: 700px;
 }
 
-.cp-pre-animate {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.cp-animate-in {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ══════════════════════════════════════════════
-   LAYOUT: DESKTOP
-══════════════════════════════════════════════ */
-.cp-layout {
-  display: flex;
-  gap: 5rem;
-  align-items: stretch; /* Explicitly stretch so the sticky child has a track to move along */
+/* ══════════════════════════════════════
+   CARD GRID
+══════════════════════════════════════ */
+.cp-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
 }
 
-/* ─── LEFT: VISUALIZER ─── */
-.cp-visual-col {
-  flex: 1.1; /* Give visualizer slightly more space */
-  position: relative;
-  padding-bottom: 2rem;
-}
-
-.cp-sticky-box {
-  position: sticky;
-  top: 130px; 
-  width: 100%;
-}
-
-.cp-visual-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Decorative Rings behind the image */
-.cp-frame-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px dashed rgba(238, 91, 22, 0.25);
-  pointer-events: none;
-}
-.cp-frame-ring--1 {
-  width: 105%;
-  height: 105%;
-  animation: spinRing 40s linear infinite;
-}
-.cp-frame-ring--2 {
-  width: 115%;
-  height: 115%;
-  border: 1px solid rgba(241, 177, 28, 0.15);
-  animation: spinRing 50s linear infinite reverse;
-}
-@keyframes spinRing {
-  100% { transform: rotate(360deg); }
-}
-
-.cp-image-wrapper {
-  position: absolute;
-  inset: 0;
-  background: #ffffff;
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 
-    0 25px 50px -12px rgba(108, 23, 18, 0.15),
-    0 0 0 1px rgba(238, 91, 22, 0.08),
-    inset 0 0 0 2px rgba(255, 255, 255, 0.8);
-  transform: translateZ(0); /* Force hardware acceleration */
-}
-
-.cp-image-inner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fdfaf7;
-}
-
-.cp-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.cp-image-inner:hover .cp-img {
-  transform: scale(1.06);
-}
-
-.cp-img-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(26,8,0,0.4) 0%, rgba(26,8,0,0) 40%);
-  pointer-events: none;
-}
-
-/* Fallback Design */
-.cp-img-fallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background: radial-gradient(circle at bottom right, #fcece3 0%, #ffffff 100%);
-}
-.cp-fallback-circle {
-  width: 180px;
-  height: 180px;
-  background: linear-gradient(135deg, rgba(238,91,22,0.1), rgba(241,177,28,0.1));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-  box-shadow: inset 0 0 20px rgba(255,255,255,0.5), 0 10px 30px rgba(238,91,22,0.1);
-  border: 1px solid rgba(238,91,22,0.2);
-}
-.cp-fallback-num {
-  font-size: 6rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, #EE5B16, #F1B11C);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0.9;
-}
-.cp-fallback-glow {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background: #EE5B16;
-  filter: blur(60px);
-  opacity: 0.15;
-  z-index: 1;
-  animation: pulseFallback 3s infinite alternate;
-}
-@keyframes pulseFallback {
-  100% { transform: scale(1.2); opacity: 0.25; }
-}
-
-/* Floating Info Card on top of image */
-.cp-floating-info {
-  position: absolute;
-  bottom: 24px;
-  left: 24px;
-  right: 24px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 1rem 1.2rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
-  animation: floatInfo 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-}
-@keyframes floatInfo {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.cp-floating-icon {
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(135deg, #EE5B16, #B22102);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(238, 91, 22, 0.3);
-}
-.cp-floating-icon svg {
-  width: 20px;
-  height: 20px;
-}
-.cp-floating-text {
-  display: flex;
-  flex-direction: column;
-}
-.cp-ft-label {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #C94B07;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.cp-ft-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #1a0800;
-}
-
-/* Image Transitions */
-.fade-img-enter-active,
-.fade-img-leave-active {
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.fade-img-enter-from { opacity: 0; transform: scale(1.05) translateY(10px); }
-.fade-img-leave-to { opacity: 0; transform: scale(0.95) translateY(-10px); }
-
-
-/* ─── RIGHT: STEPS ─── */
-.cp-steps-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding-top: 5vh;
-}
-
-.cp-step-card {
-  position: relative;
-  display: flex;
-  gap: 1.8rem;
-  padding: 1.5rem 0;
-  cursor: pointer;
-}
-
-/* The vertical connecting line */
-.cp-timeline-line {
-  position: absolute;
-  left: 27px; /* 54px / 2 */
-  top: 5rem; 
-  bottom: -1.5rem; 
-  width: 3px;
-  background: rgba(238, 91, 22, 0.1);
-  z-index: 0;
-  border-radius: 3px;
-  transition: background 0.4s;
-}
-
-.cp-step-card--active .cp-timeline-line {
-  background: linear-gradient(to bottom, #EE5B16 0%, rgba(238, 91, 22, 0.1) 100%);
-}
-
-/* Marker Circle */
-.cp-step-marker {
-  position: relative;
-  z-index: 2;
-  width: 54px;
-  height: 54px;
-  flex-shrink: 0;
-  background: #ffffff;
-  border: 2px solid rgba(238, 91, 22, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-top: 0.5rem;
-}
-
-.cp-step-pulse {
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  background: rgba(238, 91, 22, 0.2);
-  opacity: 0;
-  transform: scale(0.8);
-  transition: all 0.4s;
-}
-
-.cp-step-dot {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #EE5B16, #B22102);
-  opacity: 0;
-  transform: scale(0);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.cp-step-num {
-  position: relative;
-  z-index: 3;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #C94B07;
-  transition: color 0.4s;
-}
-
-/* Active Marker Styles */
-.cp-step-card--active .cp-step-marker {
-  border-color: transparent;
-  box-shadow: 0 8px 20px rgba(238, 91, 22, 0.3);
-  transform: scale(1.1);
-}
-.cp-step-card--active .cp-step-pulse {
-  opacity: 1;
-  transform: scale(1.1);
-  animation: pulseRing 2s infinite;
-}
-@keyframes pulseRing {
-  100% { transform: scale(1.4); opacity: 0; }
-}
-.cp-step-card--active .cp-step-dot {
-  opacity: 1;
-  transform: scale(1);
-}
-.cp-step-card--active .cp-step-num {
-  color: #fff;
-}
-
-/* Content Box */
-.cp-step-content-box {
-  flex: 1;
-  background: transparent;
-  padding: 1.5rem;
-  border-radius: 20px;
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  border: 1px solid transparent;
-}
-
-.cp-step-title {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #6b4a3a;
-  margin-bottom: 0.6rem;
-  transition: color 0.4s;
-}
-.cp-step-desc {
-  font-size: 1.05rem;
-  line-height: 1.75;
-  color: #8c6e5e;
-  transition: color 0.4s;
-}
-
-/* Active Box Styles */
-.cp-step-card--active .cp-step-content-box {
-  background: #ffffff;
-  border: 1px solid rgba(238, 91, 22, 0.15);
-  box-shadow: 0 15px 35px -10px rgba(238, 91, 22, 0.1);
-  transform: translateX(10px);
-}
-.cp-step-card--active .cp-step-title {
-  color: #B22102;
-}
-.cp-step-card--active .cp-step-desc {
-  color: #1a0800;
-}
-
-/* Hover effect on inactive cards */
-.cp-step-card:not(.cp-step-card--active):hover .cp-step-content-box {
-  background: rgba(255,255,255,0.5);
-  transform: translateX(5px);
-}
-.cp-step-card:not(.cp-step-card--active):hover .cp-step-title {
-  color: #C94B07;
-}
-
-/* Mobile Image (Hidden on Desktop) */
-.cp-mob-image {
-  display: none;
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE DESIGN
-══════════════════════════════════════════════ */
-@media (max-width: 992px) {
-  .cp-visual-col {
-    display: none; /* Hide visualizer on mobile/tablet */
-  }
-  .cp-layout {
-    display: block;
-  }
-  .cp-steps-col {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  
-  .cp-step-card {
-    padding: 1rem 0;
-    gap: 1.2rem;
-  }
-  
-  /* Ensure active transform isn't too drastic on mobile */
-  .cp-step-card--active .cp-step-content-box {
-    transform: translateX(0);
-    padding: 1.2rem;
-  }
-  .cp-step-card:not(.cp-step-card--active):hover .cp-step-content-box {
-    transform: translateX(0);
-  }
-  
-  .cp-step-content-box {
-    padding: 0.5rem 0; 
-  }
-  
-  .cp-mob-image {
-    display: block;
-    margin-top: 1.5rem;
-    animation: slideDown 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  
-  .cp-mob-img-wrap {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    border-radius: 16px;
-    background: #ffffff;
+.cp-card {
+    background: #fff;
+    border-radius: 20px;
     overflow: hidden;
-    position: relative;
-    border: 1px solid rgba(238,91,22,0.1);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-  }
-  
-  .cp-m-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .cp-mob-fallback {
-    position: absolute;
-    inset: 0;
+    cursor: pointer;
+    border: 1.5px solid #f0e8e2;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.03),
+        0 10px 30px rgba(178,34,2,0.04);
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+        opacity 0.6s cubic-bezier(0.22,1,0.36,1) calc(var(--ci,0) * 100ms),
+        transform 0.6s cubic-bezier(0.22,1,0.36,1) calc(var(--ci,0) * 100ms),
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+    outline: none;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at center, #fcece3 0%, #ffffff 100%);
-  }
-  
-  .cp-mob-fallback-num {
-    font-size: 5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #EE5B16, #F1B11C);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    opacity: 0.5;
-  }
+    flex-direction: column;
+}
+.cp--row-in .cp-card {
+    opacity: 1; transform: none;
+}
+.cp-card:hover, .cp-card:focus-visible {
+    box-shadow:
+        0 12px 30px rgba(178,34,2,0.1),
+        0 24px 50px rgba(0,0,0,0.08);
+    border-color: rgba(238,91,22,0.35);
+    transform: translateY(-8px) !important;
 }
 
-@media (max-width: 576px) {
-  .cp-section {
-    padding: 5rem 0 6rem;
-  }
-  .cp-heading {
-    font-size: 2.2rem;
-  }
-  .cp-step-card {
-    gap: 1rem;
-  }
-  .cp-step-marker {
-    width: 44px;
-    height: 44px;
-  }
-  .cp-timeline-line {
-    left: 22px;
-  }
-  .cp-step-title {
-    font-size: 1.25rem;
-  }
-  .cp-step-desc {
-    font-size: 0.95rem;
-  }
+/* photo */
+.cp-photo {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: #fdfaf7;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.cp-photo-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.cp-card:hover .cp-photo-img {
+    transform: scale(1.08);
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.cp-photo-hover {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(to bottom, rgba(178,34,2,0.0) 0%, rgba(178,34,2,0.4) 100%);
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.cp-card:hover .cp-photo-hover { opacity: 1; }
+.cp-zoom-icon {
+    width: 44px; height: 44px; color: #fff;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+    transform: scale(0.7);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cp-card:hover .cp-zoom-icon { transform: scale(1); }
+
+/* caption */
+.cp-caption {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.cp-caption-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.8rem;
+}
+.cp-caption-num {
+    font-size: 0.75rem; font-weight: 800; color: #EE5B16;
+    letter-spacing: 0.08em; padding: 4px 10px;
+    background: rgba(238,91,22,0.08); border-radius: 6px;
+}
+.cp-caption-click {
+    font-size: 0.7rem; font-weight: 600; color: #a88070;
+    opacity: 0; transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+.cp-card:hover .cp-caption-click {
+    opacity: 1; transform: translateX(0);
 }
 
-/* ══════════════════════════════════════════════
-   LIGHTBOX MODAL
-══════════════════════════════════════════════ */
-.cp-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
+.cp-caption-title {
+    font-size: 1.25rem; font-weight: 800; color: #1a0800;
+    margin-bottom: 0.5rem; line-height: 1.3;
+}
+.cp-caption-desc {
+    font-size: 0.95rem; color: #6b4a3a; line-height: 1.6;
 }
 
-.cp-lightbox-content {
-  position: relative;
-  background: #ffffff;
-  border-radius: 16px;
-  overflow: hidden;
-  width: 100%;
-  max-width: 800px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  animation: modalPop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+/* ══════════════════════════════════════
+   LIGHTBOX
+══════════════════════════════════════ */
+.cp-lb {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 1.5rem;
+    background: rgba(16,4,0,0.92);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
 }
 
-@keyframes modalPop {
-  0% { opacity: 0; transform: scale(0.95) translateY(20px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+.cp-lb-close {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.85); cursor: pointer;
+    transition: all 0.3s ease; z-index: 10;
+}
+.cp-lb-close svg { width: 22px; height: 22px; }
+.cp-lb-close:hover { background: rgba(238,91,22,0.7); transform: rotate(90deg) scale(1.1); }
+
+.cp-lb-counter {
+    position: absolute; top: 1.4rem; left: 1.5rem;
+    display: flex; align-items: baseline; gap: 4px;
+}
+.cp-lb-count-cur { font-size: 1.5rem; font-weight: 800; color: #EE5B16; }
+.cp-lb-count-sep { font-size: 1rem; color: rgba(255,255,255,0.3); margin: 0 4px; }
+.cp-lb-count-tot { font-size: 0.95rem; color: rgba(255,255,255,0.4); }
+
+.cp-lb-stage {
+    display: flex; align-items: center; gap: 1.5rem;
+    width: 100%; max-width: 1000px;
+    flex: 1; max-height: 80vh;
 }
 
-.cp-lightbox-img {
-  width: 100%;
-  max-height: 60vh;
-  object-fit: contain;
-  background: #fdfaf7;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+.cp-lb-nav {
+    width: 54px; height: 54px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+    color: rgba(255,255,255,0.85); cursor: pointer;
+    transition: all 0.2s; z-index: 10;
+}
+.cp-lb-nav svg { width: 24px; height: 24px; }
+.cp-lb-nav:hover { background: rgba(238,91,22,0.7); transform: scale(1.1); color: #fff; }
+
+.cp-lb-fig {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    margin: 0;
+}
+.cp-lb-img {
+    max-width: 100%; max-height: 55vh;
+    object-fit: contain; border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    display: block; margin-bottom: 1.5rem;
+    background: #fdfaf7;
+}
+.cp-lb-cap {
+    background: rgba(255,255,255,0.05);
+    padding: 1.2rem 1.8rem; border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    max-width: 700px; text-align: center;
+}
+.cp-lb-cap strong {
+    display: block; font-size: 1.3rem; color: #fff; margin-bottom: 0.4rem;
+}
+.cp-lb-cap p {
+    font-size: 1rem; color: rgba(255,255,255,0.75); line-height: 1.6; margin: 0;
 }
 
-.cp-lightbox-desc {
-  padding: 1.5rem 2rem;
-  overflow-y: auto;
+/* transitions */
+.lb-enter-active, .lb-leave-active { transition: opacity 0.3s ease; }
+.lb-enter-from, .lb-leave-to { opacity: 0; }
+.lb-img-enter-active, .lb-img-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.lb-img-enter-from { opacity: 0; transform: scale(0.96) translateX(15px); }
+.lb-img-leave-to   { opacity: 0; transform: scale(1.03) translateX(-15px); }
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .cp-row { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .cp-lb-stage { max-width: 800px; }
 }
 
-.cp-lightbox-desc h4 {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #1a0800;
-  margin-bottom: 0.5rem;
+@media (max-width: 768px) {
+    .cp-section { padding: 5rem 0 4rem; }
+    .cp-heading { font-size: 2.2rem; }
+    .cp-row {
+        grid-template-columns: unset;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 1.2rem;
+        padding-bottom: 1rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin: 0 -1.5rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    .cp-row::-webkit-scrollbar { display: none; }
+    .cp-card {
+        min-width: 80vw;
+        max-width: 80vw;
+        flex-shrink: 0;
+        scroll-snap-align: center;
+        opacity: 1; /* override stagger on mobile */
+        transform: none;
+    }
+    
+    .cp-lb { padding: 1rem; }
+    .cp-lb-stage { flex-direction: column; justify-content: center; gap: 1rem; }
+    .cp-lb-nav { display: none; } 
+    .cp-lb-img { max-height: 45vh; margin-bottom: 1rem; }
+    .cp-lb-cap { padding: 1rem; }
+    .cp-lb-cap strong { font-size: 1.15rem; }
+    .cp-lb-cap p { font-size: 0.95rem; }
 }
 
-.cp-lightbox-desc p {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: #6b4a3a;
+@media (prefers-reduced-motion: reduce) {
+    .cp-card, .cp-header, .cp-photo-img, .cp-zoom-icon, .cp-caption-click {
+        transition: none !important; animation: none !important; transform: none !important; opacity: 1 !important;
+    }
 }
-
-.cp-lightbox-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(26, 8, 0, 0.6);
-  backdrop-filter: blur(4px);
-  color: #ffffff;
-  border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  z-index: 10;
-}
-
-.cp-lightbox-close:hover {
-  background: #EE5B16;
-  transform: scale(1.1);
-}
-
-/* Lightbox Fade Transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-@media (max-width: 576px) {
-  .cp-lightbox-content {
-    border-radius: 12px;
-  }
-  .cp-lightbox-desc {
-    padding: 1.2rem;
-  }
-  .cp-lightbox-desc h4 {
-    font-size: 1.2rem;
-  }
-  .cp-lightbox-desc p {
-    font-size: 0.95rem;
-  }
-  .cp-lightbox-close {
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 36px;
-    height: 36px;
-  }
-}
-
 </style>

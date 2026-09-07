@@ -6,6 +6,7 @@
     <meta name="description" content="Edukasi Lingkungan – Langkah kecil yang dilakukan bersama dapat membantu menciptakan lingkungan yang lebih bersih dan nyaman.">
 
     <title>Edukasi Lingkungan – EcoBurner</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">

@@ -87,7 +87,7 @@
 
                     <div class="srs-imgbox">
                         <img
-                            src="/images/struktur.png"
+                            src="/images/depan.png"
                             alt="Struktur Rocket Stove"
                             class="srs-img"
                             :class="{ 'srs-img--on': imgLoaded }"
@@ -148,7 +148,7 @@
             <!-- ══ MOBILE VIEW ══ -->
             <div class="srs-mobile" :class="{ 'srs-mobile--in': visible }">
                 <div class="srs-mob-img-box">
-                    <img src="/images/struktur.png" alt="Struktur Rocket Stove" class="srs-mob-img" />
+                    <img src="/images/depan.png" alt="Struktur Rocket Stove" class="srs-mob-img" />
                 </div>
                 <div class="srs-mob-grid">
                     <div
@@ -201,14 +201,14 @@ const leftParts = [
         title: 'Cerobong',
         desc:  'Mengarahkan panas dan asap ke atas.',
         cardTop: '40px',
-        y: '10%', x: '50%',
+        y: '15%', x: '50%',
     },
     {
         id: 'udara', num: '03',
         title: 'Saluran Udara',
         desc:  'Membantu memasok oksigen agar api tetap stabil.',
         cardTop: '500px',
-        y: '67%', x: '28%',
+        y: '85%', x: '50%',
     },
 ];
 
@@ -219,14 +219,14 @@ const rightParts = [
         title: 'Ruang Pembakaran',
         desc:  'Tempat terjadinya proses pembakaran.',
         cardTop: '360px',
-        y: '50%', x: '48%',
+        y: '40%', x: '50%',
     },
     {
         id: 'rangka', num: '04',
         title: 'Rangka Utama',
         desc:  'Menjadi penopang seluruh bagian Rocket Stove.',
         cardTop: '640px',
-        y: '84%', x: '50%',
+        y: '85%', x: '80%',
     },
 ];
 
@@ -378,7 +378,7 @@ onUnmounted(() => {
 ══════════════════════════════════════════ */
 .srs-diagram {
     position: relative;
-    min-height: 590px; /* Compensate for pushed down image */
+    padding-bottom: 3rem;
     margin-bottom: 0;
     opacity: 0; transform: translateY(24px);
     transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
@@ -423,14 +423,14 @@ onUnmounted(() => {
     outline: none;
 }
 .srs-wrap-card--l {
-    left: 6%;
+    left: 2%;
     transform: translate(-22px, -50%);
     transition:
         opacity 0.55s cubic-bezier(0.22,1,0.36,1) calc(var(--si,0) * 130ms + 0.3s),
         transform 0.55s cubic-bezier(0.22,1,0.36,1) calc(var(--si,0) * 130ms + 0.3s);
 }
 .srs-wrap-card--r {
-    right: 6%;
+    right: 2%;
     transform: translate(22px, -50%);
     transition:
         opacity 0.55s cubic-bezier(0.22,1,0.36,1) calc(var(--si,0) * 130ms + 0.3s),
@@ -475,9 +475,9 @@ onUnmounted(() => {
 
 /* ── Center image area ── */
 .srs-center {
-    position: absolute;
-    left: 50%; top: 90px; /* Pushed down so rings don't overlap header text */
-    transform: translateX(-50%);
+    position: relative;
+    margin: 20px auto 0;
+    width: 280px;
     z-index: 1;
     display: flex; align-items: center; justify-content: center;
 }
@@ -501,7 +501,7 @@ onUnmounted(() => {
 
 .srs-imgbox {
     position: relative; z-index: 1;
-    width: 420px;
+    width: 100%;
     border-radius: 18px; overflow: hidden;
     box-shadow:
         0 0 0 1.5px rgba(238,91,22,0.15),
