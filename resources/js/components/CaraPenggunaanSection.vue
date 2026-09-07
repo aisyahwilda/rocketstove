@@ -36,7 +36,7 @@
               
               <div class="cp-image-wrapper">
                 <Transition name="fade-img" mode="out-in">
-                  <div :key="activeStep" class="cp-image-inner">
+                  <div :key="activeStep" class="cp-image-inner" @click="openLightbox(activeStep)" style="cursor: pointer;">
                     
                     <!-- Fallback Visual -->
                     <div class="cp-img-fallback" v-show="imageError">
@@ -106,7 +106,7 @@
               
               <!-- Mobile Inline Image -->
               <div class="cp-mob-image" v-if="activeStep === index">
-                <div class="cp-mob-img-wrap">
+                <div class="cp-mob-img-wrap" @click="openLightbox(index)" style="cursor: pointer;">
                   <div class="cp-mob-fallback" v-if="mobileImgError[index]">
                      <span class="cp-mob-fallback-num">{{ index + 1 }}</span>
                   </div>
@@ -126,6 +126,22 @@
 
       </div>
     </div>
+
+    <!-- ══ LIGHTBOX OVERLAY ══ -->
+    <Transition name="fade">
+      <div v-if="isLightboxOpen" class="cp-lightbox" @click="closeLightbox">
+        <div class="cp-lightbox-content" @click.stop>
+          <button class="cp-lightbox-close" @click="closeLightbox" aria-label="Tutup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+          <img :src="`/images/${lightboxStep + 1}.jpg`" :alt="steps[lightboxStep].title" class="cp-lightbox-img" />
+          <div class="cp-lightbox-desc">
+            <h4>Langkah {{ lightboxStep + 1 }}: {{ steps[lightboxStep].title }}</h4>
+            <p>{{ steps[lightboxStep].desc }}</p>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </section>
 </template>
 
@@ -135,6 +151,20 @@ import { ref, onMounted, onUnmounted } from 'vue';
 const activeStep = ref(0);
 const imageError = ref(false);
 const mobileImgError = ref({});
+
+const isLightboxOpen = ref(false);
+const lightboxStep = ref(0);
+
+function openLightbox(index) {
+  lightboxStep.value = index;
+  isLightboxOpen.value = true;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  isLightboxOpen.value = false;
+  document.body.style.overflow = '';
+}
 
 const steps = [
   {
@@ -837,4 +867,121 @@ const vAnimateOnScroll = {
   from { opacity: 0; transform: translateY(-10px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ══════════════════════════════════════════════
+   LIGHTBOX MODAL
+══════════════════════════════════════════════ */
+.cp-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.cp-lightbox-content {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: modalPop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes modalPop {
+  0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.cp-lightbox-img {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  background: #fdfaf7;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.cp-lightbox-desc {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+}
+
+.cp-lightbox-desc h4 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1a0800;
+  margin-bottom: 0.5rem;
+}
+
+.cp-lightbox-desc p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #6b4a3a;
+}
+
+.cp-lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(26, 8, 0, 0.6);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.cp-lightbox-close:hover {
+  background: #EE5B16;
+  transform: scale(1.1);
+}
+
+/* Lightbox Fade Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 576px) {
+  .cp-lightbox-content {
+    border-radius: 12px;
+  }
+  .cp-lightbox-desc {
+    padding: 1.2rem;
+  }
+  .cp-lightbox-desc h4 {
+    font-size: 1.2rem;
+  }
+  .cp-lightbox-desc p {
+    font-size: 0.95rem;
+  }
+  .cp-lightbox-close {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 36px;
+    height: 36px;
+  }
+}
+
 </style>
