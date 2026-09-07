@@ -15,6 +15,7 @@ foreach ($routes as $uri => $file) {
     $request = Illuminate\Http\Request::create($uri, 'GET');
     $response = $kernel->handle($request);
     $content = $response->getContent();
+    $content = str_replace('http://localhost', '', $content);
     
     $dir = dirname(__DIR__.'/'.$file);
     if (!is_dir($dir)) {
