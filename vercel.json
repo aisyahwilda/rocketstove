@@ -2,10 +2,6 @@
     "version": 2,
     "builds": [
         {
-            "src": "api/index.php",
-            "use": "vercel-php@0.8.0"
-        },
-        {
             "src": "public/**",
             "use": "@vercel/static"
         }
@@ -28,22 +24,24 @@
             "dest": "/public/robots.txt"
         },
         {
+            "src": "/tentang-kami",
+            "dest": "/public/tentang-kami/index.html"
+        },
+        {
+            "src": "/rocket-stove",
+            "dest": "/public/rocket-stove/index.html"
+        },
+        {
+            "src": "/edukasi",
+            "dest": "/public/edukasi/index.html"
+        },
+        {
+            "src": "/dokumentasi",
+            "dest": "/public/dokumentasi/index.html"
+        },
+        {
             "src": "/(.*)",
-            "dest": "/api/index.php"
+            "dest": "/public/index.html"
         }
-    ],
-    "env": {
-        "APP_ENV": "production",
-        "APP_DEBUG": "true",
-        "APP_KEY": "base64:FSwE4xeY5ffnnnETmIhdM1me5XOMp+ukFu/PWnzHZ4w=",
-        "APP_CONFIG_CACHE": "/tmp/config.php",
-        "APP_EVENTS_CACHE": "/tmp/events.php",
-        "APP_PACKAGES_CACHE": "/tmp/packages.php",
-        "APP_ROUTES_CACHE": "/tmp/routes.php",
-        "APP_SERVICES_CACHE": "/tmp/services.php",
-        "VIEW_COMPILED_PATH": "/tmp",
-        "CACHE_DRIVER": "array",
-        "LOG_CHANNEL": "stderr",
-        "SESSION_DRIVER": "cookie"
-    }
+    ]
 }
