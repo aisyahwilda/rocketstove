@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build && php generate-static.php",
+  "buildCommand": "echo \"Skip build\"",
   "outputDirectory": "public",
   "cleanUrls": true
 }
