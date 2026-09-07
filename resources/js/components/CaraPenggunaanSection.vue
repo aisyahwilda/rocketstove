@@ -48,7 +48,7 @@
 
                     <!-- Actual Image -->
                     <img 
-                      :src="`/images/langkah-${activeStep + 1}.png`" 
+                      :src="`/images/${activeStep + 1}.jpg`" 
                       :alt="steps[activeStep].title"
                       class="cp-img"
                       @error="imageError = true"
@@ -111,7 +111,7 @@
                      <span class="cp-mob-fallback-num">{{ index + 1 }}</span>
                   </div>
                   <img 
-                    :src="`/images/langkah-${index + 1}.png`" 
+                    :src="`/images/${index + 1}.jpg`" 
                     :alt="step.title"
                     class="cp-m-img"
                     @error="mobileImgError[index] = true"
